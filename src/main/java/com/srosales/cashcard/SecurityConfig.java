@@ -20,11 +20,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/cashcards/**")
-                        .hasRole("CARD-OWNER"))
-                .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-                .httpBasic(withDefaults());
+        http.authorizeHttpRequests((authorize) -> {
+                    try {
+                        authorize
+                                .requestMatchers("/cashcards/**")
+                                .hasRole("CARD-OWNER")
+                                .and()
+                                .csrf().disable().httpBasic();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
         return http.build();
     }
 
